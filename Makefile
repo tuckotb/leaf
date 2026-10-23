@@ -4,9 +4,10 @@ TARGET   := $(OUT_DIR)/leaf
 
 CC            ?= clang
 TARGET_TRIPLE := powerpc-unknown-eabi
+ARCH_FLAGS := -mcpu=750 -mno-altivec
 
-CFLAGS   := --target=$(TARGET_TRIPLE) -ffreestanding -std=c11 -Wall -Wextra -O2
-ASFLAGS  := --target=$(TARGET_TRIPLE) -ffreestanding -mregnames
+CFLAGS   := --target=$(TARGET_TRIPLE) $(ARCH_FLAGS) -ffreestanding -std=c11 -Wall -Wextra -O2
+ASFLAGS  := --target=$(TARGET_TRIPLE) $(ARCH_FLAGS) -ffreestanding -mregnames
 
 LSCRIPT  := link.ld
 LDFLAGS   := --target=$(TARGET_TRIPLE) -ffreestanding -nostdlib -Wl,-no-pie -T $(LSCRIPT)
@@ -43,7 +44,7 @@ clean:
 run: $(TARGET)
 	qemu-system-ppc \
 	  -M mac99,via=pmu \
-	  -cpu g4 \
+	  -cpu 750 \
 	  -m 512 \
 	  -kernel ./out/leaf \
 	  -nographic \
