@@ -2,7 +2,7 @@ OUT_DIR  := out
 SRC_DIR  := .
 TARGET   := $(OUT_DIR)/leaf
 
-CC            ?= clang
+CC            := clang
 TARGET_TRIPLE := powerpc-unknown-eabi
 ARCH_FLAGS := -mcpu=750 -mno-altivec
 
@@ -10,7 +10,7 @@ CFLAGS   := --target=$(TARGET_TRIPLE) $(ARCH_FLAGS) -ffreestanding -std=c11 -Wal
 ASFLAGS  := --target=$(TARGET_TRIPLE) $(ARCH_FLAGS) -ffreestanding -mregnames
 
 LSCRIPT  := link.ld
-LDFLAGS   := --target=$(TARGET_TRIPLE) -ffreestanding -nostdlib -Wl,-no-pie -T $(LSCRIPT)
+LDFLAGS   := --target=$(TARGET_TRIPLE) -fuse-ld=lld -ffreestanding -nostdlib -Wl,-no-pie -T $(LSCRIPT)
 LDLIBS   :=
 
 # Separate sources by extension
@@ -41,12 +41,13 @@ $(OUT_DIR):
 .PHONY: all clean run
 clean:
 	rm -rf $(OUT_DIR)
+
 run: $(TARGET)
 	qemu-system-ppc \
-	  -M mac99,via=pmu \
-	  -cpu 750 \
+	  -M pegasos2 \
+	  -cpu g3 \
 	  -m 512 \
-	  -kernel ./out/leaf \
-	  -nographic \
-	  -prom-env "auto-boot?=true"
-
+	  -kernel $(TARGET) \
+	  -display none \
+	  -serial stdio \
+	  -monitor none

@@ -28,3 +28,12 @@ _start:
 
 .L_bss_done:
 	bl kmain
+
+.global vof_client_call
+.type vof_client_call, @function
+vof_client_call:
+	mr      4, 3
+	li      3, 0
+	ori     3, 3, 0xf005
+	sc      1
+	blr
